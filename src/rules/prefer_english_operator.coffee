@@ -9,7 +9,7 @@ module.exports = class RuleProcessor
         '''
         level: 'ignore'
         doubleNotLevel: 'ignore'
-        message: 'Don\'t use &&, ||, ==, !=, or !'
+        message: 'E031'
 
     tokens: ['COMPARE', 'UNARY_MATH', 'LOGIC']
     lintToken: (token, tokenApi) ->

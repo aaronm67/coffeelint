@@ -5,7 +5,7 @@ module.exports = class NoUnnecessaryFatArrows
     rule:
         name: 'no_unnecessary_fat_arrows'
         level: 'warn'
-        message: 'Unnecessary fat arrow'
+        message: 'E029'
         description: """
             Disallows defining functions with fat arrows when `this`
             is not used within the function.

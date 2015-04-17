@@ -4,7 +4,7 @@ module.exports = class NoBackticks
     rule:
         name: 'no_backticks'
         level : 'error'
-        message : 'Backticks are forbidden'
+        message : 'E014'
         description: """
             Backticks allow snippets of JavaScript to be embedded in
             CoffeeScript. While some folks consider backticks useful in a few

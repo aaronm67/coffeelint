@@ -6,7 +6,7 @@ module.exports = class LineEndings
         name: 'line_endings'
         level : 'ignore'
         value : 'unix' # or 'windows'
-        message : 'Line contains incorrect line endings'
+        message : 'E010'
         description: """
             This rule ensures your project uses only <tt>windows</tt> or
             <tt>unix</tt> line endings. This rule is disabled by default.

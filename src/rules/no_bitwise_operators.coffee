@@ -3,7 +3,7 @@ module.exports = class NoBitwiseOperators
     rule:
         name: 'no_bitwise_operators'
         level : 'ignore'
-        message : 'No bitwise operators'
+        message : 'E015'
         description: """
             This option prohibits the use of bitwise operators such as
             ^ (XOR), | (OR) and others. Bitwise operators are very rare

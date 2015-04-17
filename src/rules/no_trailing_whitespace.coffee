@@ -9,7 +9,7 @@ module.exports = class NoTrailingWhitespace
     rule:
         name: 'no_trailing_whitespace'
         level : 'error'
-        message : 'Line ends with trailing whitespace'
+        message : 'E027'
         allowed_in_comments : false
         allowed_in_empty_lines: true
         description: """

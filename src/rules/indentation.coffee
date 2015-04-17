@@ -5,7 +5,7 @@ module.exports = class Indentation
         name: 'indentation'
         value : 2
         level : 'error'
-        message : 'Line contains inconsistent indentation'
+        message : 'E009'
         description: """
             This rule imposes a standard number of spaces to be used for
             indentation. Since whitespace is significant in CoffeeScript, it's

@@ -5,7 +5,7 @@ module.exports = class NoEmptyParamList
     rule:
         name: 'no_empty_param_list'
         level : 'ignore'
-        message : 'Empty parameter list is forbidden'
+        message : 'E018'
         description: """
             This rule prohibits empty parameter lists in function definitions.
             <pre>

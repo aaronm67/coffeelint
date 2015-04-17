@@ -4,7 +4,7 @@ module.exports = class CamelCaseClasses
     rule:
         name: 'transform_messes_up_line_numbers'
         level: 'warn'
-        message: 'Transforming source messes up line numbers'
+        message: 'E034'
         description:
             """
             This rule detects when changes are made by transform function,

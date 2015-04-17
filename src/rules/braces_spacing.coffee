@@ -5,7 +5,7 @@ module.exports = class BracesSpacing
         level: 'ignore'
         spaces: 0
         empty_object_spaces: 0
-        message: 'Curly braces must have the proper spacing'
+        message: 'E002'
         description: '''
             This rule checks to see that there is the proper spacing inside
             curly braces. The spacing amount is specified by "spaces".

@@ -4,7 +4,7 @@ module.exports = class EmptyConstructorNeedsParens
     rule:
         name: 'empty_constructor_needs_parens'
         level: 'ignore'
-        message: 'Invoking a constructor without parens and without arguments'
+        message: 'E007'
         description:
             "Requires constructors with no parameters to include the parens"
 

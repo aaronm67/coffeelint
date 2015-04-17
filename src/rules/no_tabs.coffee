@@ -4,7 +4,7 @@ module.exports = class NoTabs
     rule:
         name: 'no_tabs'
         level : 'error'
-        message : 'Line contains tab indentation'
+        message : 'E024'
         description: """
             This rule forbids tabs in indentation. Enough said. It is enabled by
             default.

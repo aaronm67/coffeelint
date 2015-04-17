@@ -66,6 +66,8 @@ difference = (a, b) ->
 LineLinter = require './line_linter.coffee'
 LexicalLinter = require './lexical_linter.coffee'
 ASTLinter = require './ast_linter.coffee'
+messages = require './messages.coffee'
+_ = require 'lodash'
 
 # Cache instance, disabled by default
 cache = null
@@ -315,6 +317,10 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
 
     cache?.set source, errors
 
-    errors
+    errors = _.map errors, (error) ->
+        if error and error.message and messages[error.message]?
+            error.message = messages[error.message]
+        return error
+    return errors
 
 coffeelint.setCache = (obj) -> cache = obj

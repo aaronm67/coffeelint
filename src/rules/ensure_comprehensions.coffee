@@ -3,7 +3,7 @@ module.exports = class EnsureComprehensions
     rule:
         name: 'ensure_comprehensions'
         level: 'warn'
-        message: 'Comprehensions must have parentheses around them'
+        message: 'E008'
         description:
             'This rule makes sure that parentheses are around comprehensions.'
 

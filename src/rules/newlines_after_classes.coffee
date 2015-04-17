@@ -5,7 +5,7 @@ module.exports = class NewlinesAfterClasses
         name: 'newlines_after_classes'
         value : 3
         level : 'ignore'
-        message : 'Wrong count of newlines between a class and other code'
+        message : 'E013'
         description: "Checks the number of newlines between classes and other
         code"
 

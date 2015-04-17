@@ -17,7 +17,7 @@ module.exports = class MaxLineLength
         value: 80
         level : 'error'
         limitComments: true
-        message : 'Line exceeds maximum allowed length'
+        message : 'E011'
         description: """
             This rule imposes a maximum line length on your code. <a
             href="http://www.python.org/dev/peps/pep-0008/">Python's style

@@ -6,7 +6,7 @@ module.exports = class NoTrailingSemicolons
     rule:
         name: 'no_trailing_semicolons'
         level : 'error'
-        message : 'Line contains a trailing semicolon'
+        message : 'E026'
         description: """
             This rule prohibits trailing semicolons, since they are needless
             cruft in CoffeeScript.

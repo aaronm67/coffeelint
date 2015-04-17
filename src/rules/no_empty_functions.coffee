@@ -7,7 +7,7 @@ module.exports = class NoEmptyFunctions
     rule:
         name: 'no_empty_functions'
         level: 'ignore'
-        message: 'Empty function'
+        message: 'E017'
         description: """
             Disallows declaring empty functions. The goal of this rule is that
             unintentional empty callbacks can be detected:

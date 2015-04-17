@@ -3,7 +3,7 @@ module.exports = class ColonAssignmentSpacing
     rule :
         name : 'colon_assignment_spacing'
         level : 'ignore'
-        message :'Colon assignment without proper spacing'
+        message : 'E004'
         spacing :
             left : 0
             right : 0

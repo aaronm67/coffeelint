@@ -4,7 +4,7 @@ module.exports = class NoImplicitBraces
     rule:
         name: 'no_implicit_braces'
         level: 'ignore'
-        message: 'Implicit braces are forbidden'
+        message: 'E019'
         strict: true
         description: '''
             This rule prohibits implicit braces when declaring object literals.

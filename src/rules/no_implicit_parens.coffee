@@ -4,7 +4,7 @@ module.exports = class NoImplicitParens
         name: 'no_implicit_parens'
         strict : true
         level : 'ignore'
-        message : 'Implicit parens are forbidden'
+        message : 'E020'
         description: """
             This rule prohibits implicit parens on function calls.
             <pre>

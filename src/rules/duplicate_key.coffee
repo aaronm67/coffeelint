@@ -8,7 +8,7 @@ module.exports = class DuplicateKey
         # See http://jslinterrors.com/duplicate-key-a/
         name: 'duplicate_key'
         level: 'error'
-        message: 'Duplicate key defined in object or class'
+        message: 'E006'
         description:
             "Prevents defining duplicate keys in object literals and classes"
 

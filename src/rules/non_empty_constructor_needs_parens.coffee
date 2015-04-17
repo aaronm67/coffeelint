@@ -6,7 +6,7 @@ module.exports = class NonEmptyConstructorNeedsParens extends ParentClass
     rule:
         name: 'non_empty_constructor_needs_parens'
         level: 'ignore'
-        message: 'Invoking a constructor without parens and with arguments'
+        message: 'E030'
         description:
             "Requires constructors with parameters to include the parens"
 
