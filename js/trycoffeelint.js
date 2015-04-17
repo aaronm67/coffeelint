@@ -1,4 +1,6 @@
 (function () {
+    var editor;
+    var configEditor;
 
     var buildReportTable = function (errors) {
 
@@ -44,23 +46,48 @@
     };
 
     var runLinter = function () {
-        var source = $('.editor').val();
+        var source = editor.getValue();
+
+        var configError = null;
+        var config = { }
+        try {
+          config = JSON.parse(configEditor.getValue());
+        }
+        catch (e) {
+          configError = 'Invalid JSON in configuration';
+        }
+
         var errors = [];
         var compileError = null;
         try {
-            errors = coffeelint.lint(source);
+            errors = coffeelint.lint(source, config);
         } catch (e) {
             compileError = e;
         }
         if (compileError) {
             displayError(compileError);
-        } else {
+        }
+        else if (configError) {
+            displayError(configError);
+        }
+        else {
             displayReport(errors);
         }
     };
 
     $(document).ready(function () {
-        $('.editor').focus().keyup(runLinter);
+        var $editor = $('.editor');
+        var $config = $('.config-editor');
+
+        editor = CodeMirror.fromTextArea($editor[0], {
+            lineNumbers: true
+        }, $editor.val());
+
+        configEditor = CodeMirror.fromTextArea($config[0], {
+            lineNumbers: true
+        }, $config.val());
+
+        $editor.focus().keyup(runLinter);
         $('.run').click(runLinter);
     });
 

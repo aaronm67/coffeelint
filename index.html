@@ -4,6 +4,7 @@
     <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
     <title>CoffeeLint - Lint your CoffeeScript</title>
     <link rel="stylesheet" type="text/css" href="css/coffeelint.css" />
+    <link rel="stylesheet" type="text/css" href="css/codemirror.css" />
     <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
     <script type="text/javascript">
       var _gaq = _gaq || [];
@@ -53,6 +54,28 @@ class Gangster
   wasItAGoodDay : () ->
     yes
 </textarea>
+
+
+<textarea class="config-editor" spellcheck="false">
+{
+  "max_line_length": {
+    "level": "ignore"
+  },
+  "no_bitwise_operators": {
+    "level": "error"
+  },
+  "empty_constructor_needs_parens": {
+    "level": "error"
+  },
+  "no_implicit_braces": {
+    "level": "error"
+  },
+  "space_operators": {
+    "level": "error"
+  }
+}
+</textarea>
+
       </div>
 
       <!-- LINT REPORT -->
@@ -1209,6 +1232,7 @@ and warns that line numbers are probably incorrect.
 
     <script type="text/javascript" src="js/vendor/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="js/vendor/coffee-script.js"></script>
+    <script type="text/javascript" src="js/vendor/codemirror.js"></script>
     <script type="text/javascript" src="js/coffeelint.js"></script>
     <script type="text/javascript" src="js/trycoffeelint.js"></script>
   </body>
