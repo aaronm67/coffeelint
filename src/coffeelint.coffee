@@ -161,6 +161,7 @@ coffeelint.registerRule require './rules/newlines_after_classes.coffee'
 coffeelint.registerRule require './rules/no_unnecessary_fat_arrows.coffee'
 coffeelint.registerRule require './rules/missing_fat_arrows.coffee'
 coffeelint.registerRule require './rules/undefined_variables.coffee'
+coffeelint.registerRule require './rules/variable_scope.coffee'
 coffeelint.registerRule(
     require './rules/non_empty_constructor_needs_parens.coffee'
 )
