@@ -181,6 +181,8 @@ coffeelint.registerRule(require('./rules/no_plusplus.coffee'));
 
 coffeelint.registerRule(require('./rules/no_throwing_strings.coffee'));
 
+coffeelint.registerRule(require('./rules/no_bitwise_operators.coffee'));
+
 coffeelint.registerRule(require('./rules/no_backticks.coffee'));
 
 coffeelint.registerRule(require('./rules/no_implicit_parens.coffee'));
@@ -368,7 +370,7 @@ coffeelint.setCache = function(obj) {
 
 
 
-},{"./../package.json":2,"./ast_linter.coffee":3,"./error_report.coffee":5,"./lexical_linter.coffee":6,"./line_linter.coffee":7,"./rules.coffee":8,"./rules/arrow_spacing.coffee":9,"./rules/braces_spacing.coffee":10,"./rules/camel_case_classes.coffee":11,"./rules/colon_assignment_spacing.coffee":12,"./rules/cyclomatic_complexity.coffee":13,"./rules/duplicate_key.coffee":14,"./rules/empty_constructor_needs_parens.coffee":15,"./rules/ensure_comprehensions.coffee":16,"./rules/indentation.coffee":17,"./rules/line_endings.coffee":18,"./rules/max_line_length.coffee":19,"./rules/missing_fat_arrows.coffee":20,"./rules/newlines_after_classes.coffee":21,"./rules/no_backticks.coffee":22,"./rules/no_debugger.coffee":23,"./rules/no_empty_functions.coffee":24,"./rules/no_empty_param_list.coffee":25,"./rules/no_implicit_braces.coffee":26,"./rules/no_implicit_parens.coffee":27,"./rules/no_interpolation_in_single_quotes.coffee":28,"./rules/no_plusplus.coffee":29,"./rules/no_stand_alone_at.coffee":30,"./rules/no_tabs.coffee":31,"./rules/no_throwing_strings.coffee":32,"./rules/no_trailing_semicolons.coffee":33,"./rules/no_trailing_whitespace.coffee":34,"./rules/no_unnecessary_double_quotes.coffee":35,"./rules/no_unnecessary_fat_arrows.coffee":36,"./rules/non_empty_constructor_needs_parens.coffee":37,"./rules/prefer_english_operator.coffee":38,"./rules/space_operators.coffee":39,"./rules/spacing_after_comma.coffee":40,"./rules/transform_messes_up_line_numbers.coffee":41}],2:[function(require,module,exports){
+},{"./../package.json":2,"./ast_linter.coffee":3,"./error_report.coffee":5,"./lexical_linter.coffee":6,"./line_linter.coffee":7,"./rules.coffee":8,"./rules/arrow_spacing.coffee":9,"./rules/braces_spacing.coffee":10,"./rules/camel_case_classes.coffee":11,"./rules/colon_assignment_spacing.coffee":12,"./rules/cyclomatic_complexity.coffee":13,"./rules/duplicate_key.coffee":14,"./rules/empty_constructor_needs_parens.coffee":15,"./rules/ensure_comprehensions.coffee":16,"./rules/indentation.coffee":17,"./rules/line_endings.coffee":18,"./rules/max_line_length.coffee":19,"./rules/missing_fat_arrows.coffee":20,"./rules/newlines_after_classes.coffee":21,"./rules/no_backticks.coffee":22,"./rules/no_bitwise_operators.coffee":23,"./rules/no_debugger.coffee":24,"./rules/no_empty_functions.coffee":25,"./rules/no_empty_param_list.coffee":26,"./rules/no_implicit_braces.coffee":27,"./rules/no_implicit_parens.coffee":28,"./rules/no_interpolation_in_single_quotes.coffee":29,"./rules/no_plusplus.coffee":30,"./rules/no_stand_alone_at.coffee":31,"./rules/no_tabs.coffee":32,"./rules/no_throwing_strings.coffee":33,"./rules/no_trailing_semicolons.coffee":34,"./rules/no_trailing_whitespace.coffee":35,"./rules/no_unnecessary_double_quotes.coffee":36,"./rules/no_unnecessary_fat_arrows.coffee":37,"./rules/non_empty_constructor_needs_parens.coffee":38,"./rules/prefer_english_operator.coffee":39,"./rules/space_operators.coffee":40,"./rules/spacing_after_comma.coffee":41,"./rules/transform_messes_up_line_numbers.coffee":42}],2:[function(require,module,exports){
 module.exports={
   "name": "coffeelint",
   "description": "Lint your CoffeeScript",
@@ -1711,7 +1713,7 @@ module.exports = MaxLineLength = (function() {
     var limitComments, lineLength, max, ref, ref1;
     max = (ref = lineApi.config[this.rule.name]) != null ? ref.value : void 0;
     limitComments = (ref1 = lineApi.config[this.rule.name]) != null ? ref1.limitComments : void 0;
-    lineLength = line.trimRight().length;
+    lineLength = line.replace(/\s+$/, '').length;
     if (lineApi.isLiterate() && regexes.literateComment.test(line)) {
       lineLength -= 2;
     }
@@ -1924,6 +1926,39 @@ module.exports = NoBackticks = (function() {
 
 
 },{}],23:[function(require,module,exports){
+var NoBitwiseOperators;
+
+module.exports = NoBitwiseOperators = (function() {
+  function NoBitwiseOperators() {}
+
+  NoBitwiseOperators.prototype.rule = {
+    name: 'no_bitwise_operators',
+    level: 'ignore',
+    message: 'No bitwise operators',
+    description: "This option prohibits the use of bitwise operators such as\n^ (XOR), | (OR) and others. Bitwise operators are very rare\nin JavaScript programs and quite often & is simply a mistyped &&."
+  };
+
+  NoBitwiseOperators.prototype.tokens = ['LOGIC', 'SHIFT', 'UNARY_MATH'];
+
+  NoBitwiseOperators.prototype.lintToken = function(token, tokenApi) {
+    var bitwiseTokens, symbol;
+    bitwiseTokens = ['&', '|', '^', '~', '<<', '>>'];
+    symbol = token[1];
+    if (bitwiseTokens.indexOf(symbol) === -1) {
+      return null;
+    }
+    return {
+      context: "Unexpected use of '" + symbol + "'"
+    };
+  };
+
+  return NoBitwiseOperators;
+
+})();
+
+
+
+},{}],24:[function(require,module,exports){
 var NoDebugger;
 
 module.exports = NoDebugger = (function() {
@@ -1950,7 +1985,7 @@ module.exports = NoDebugger = (function() {
 
 
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 var NoEmptyFunctions, isEmptyCode;
 
 isEmptyCode = function(node, astApi) {
@@ -1995,7 +2030,7 @@ module.exports = NoEmptyFunctions = (function() {
 
 
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 var NoEmptyParamList;
 
 module.exports = NoEmptyParamList = (function() {
@@ -2022,7 +2057,7 @@ module.exports = NoEmptyParamList = (function() {
 
 
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var NoImplicitBraces;
 
 module.exports = NoImplicitBraces = (function() {
@@ -2082,7 +2117,7 @@ module.exports = NoImplicitBraces = (function() {
 
 
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 var NoImplicitParens;
 
 module.exports = NoImplicitParens = (function() {
@@ -2125,7 +2160,7 @@ module.exports = NoImplicitParens = (function() {
 
 
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 var NoInterpolationInSingleQuotes;
 
 module.exports = NoInterpolationInSingleQuotes = (function() {
@@ -2153,7 +2188,7 @@ module.exports = NoInterpolationInSingleQuotes = (function() {
 
 
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var NoPlusPlus;
 
 module.exports = NoPlusPlus = (function() {
@@ -2180,7 +2215,7 @@ module.exports = NoPlusPlus = (function() {
 
 
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 var NoStandAloneAt;
 
 module.exports = NoStandAloneAt = (function() {
@@ -2217,7 +2252,7 @@ module.exports = NoStandAloneAt = (function() {
 
 
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 var NoTabs, indentationRegex,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -2249,7 +2284,7 @@ module.exports = NoTabs = (function() {
 
 
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 var NoThrowingStrings;
 
 module.exports = NoThrowingStrings = (function() {
@@ -2277,7 +2312,7 @@ module.exports = NoThrowingStrings = (function() {
 
 
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 var NoTrailingSemicolons, regexes,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   slice = [].slice;
@@ -2330,7 +2365,7 @@ module.exports = NoTrailingSemicolons = (function() {
 
 
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 var NoTrailingWhitespace, regexes;
 
 regexes = {
@@ -2394,7 +2429,7 @@ module.exports = NoTrailingWhitespace = (function() {
 
 
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 var NoUnnecessaryDoubleQuotes;
 
 module.exports = NoUnnecessaryDoubleQuotes = (function() {
@@ -2445,7 +2480,7 @@ module.exports = NoUnnecessaryDoubleQuotes = (function() {
 
 
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 var NoUnnecessaryFatArrows, any,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -2527,7 +2562,7 @@ module.exports = NoUnnecessaryFatArrows = (function() {
 
 
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 var NonEmptyConstructorNeedsParens, ParentClass,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -2560,7 +2595,7 @@ module.exports = NonEmptyConstructorNeedsParens = (function(superClass) {
 
 
 
-},{"./empty_constructor_needs_parens.coffee":15}],38:[function(require,module,exports){
+},{"./empty_constructor_needs_parens.coffee":15}],39:[function(require,module,exports){
 var RuleProcessor;
 
 module.exports = RuleProcessor = (function() {
@@ -2622,7 +2657,7 @@ module.exports = RuleProcessor = (function() {
 
 
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 var SpaceOperators,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -2727,7 +2762,7 @@ module.exports = SpaceOperators = (function() {
 
 
 
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 var RuleProcessor;
 
 module.exports = RuleProcessor = (function() {
@@ -2756,7 +2791,7 @@ module.exports = RuleProcessor = (function() {
 
 
 
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 var CamelCaseClasses;
 
 module.exports = CamelCaseClasses = (function() {
