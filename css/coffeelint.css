@@ -41,6 +41,11 @@ body {
   top:8px;
 }
 
+.title a {
+    text-decoration: none;
+    color: #fff;
+}
+
 .header_links {
   font-size:13px;
   position:relative;

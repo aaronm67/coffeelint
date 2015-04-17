@@ -1,0 +1,30 @@
+      <!-- DOCUMENTATION -->
+      <div class="row doc_row">
+
+        <h2 class="section_title" id="options">Options</h2>
+        <p>
+          By default, CoffeeLint will help ensure you are writing idiomatic
+          CoffeeScript, but every rule is optional and configurable so it can
+          be tuned to fit your preferred coding style. To override any of
+          CoffeeLint's default options, <a href="index.html#usage">generate a
+          configuration file</a> and tweak it as needed. To enable an option,
+          set its level to <tt>error</tt>, and to disable an option, set its
+          level to <tt>ignore</tt>. If you set the level to <tt>warn</tt>,
+          violations will be reported, but won't cause a non-zero exit code.
+        </p>
+        <p>
+          To disable a rule inline use the following:
+        </p>
+
+<pre><code># coffeelint: disable=max_line_length
+foo = "some/huge/line/string/with/embed/#{values}.that/surpasses/the/max/column/width"
+# coffeelint: enable=max_line_length</code></pre>
+        <p>Here's a rundown of CoffeeLint's rules:</p>
+        <table class="options">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
