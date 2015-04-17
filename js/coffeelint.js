@@ -177,6 +177,8 @@ coffeelint.registerRule(require('./rules/indentation.coffee'));
 
 coffeelint.registerRule(require('./rules/camel_case_classes.coffee'));
 
+coffeelint.registerRule(require('./rules/camel_case_vars.coffee'));
+
 coffeelint.registerRule(require('./rules/colon_assignment_spacing.coffee'));
 
 coffeelint.registerRule(require('./rules/no_implicit_braces.coffee'));
@@ -208,6 +210,10 @@ coffeelint.registerRule(require('./rules/newlines_after_classes.coffee'));
 coffeelint.registerRule(require('./rules/no_unnecessary_fat_arrows.coffee'));
 
 coffeelint.registerRule(require('./rules/missing_fat_arrows.coffee'));
+
+coffeelint.registerRule(require('./rules/undefined_variables.coffee'));
+
+coffeelint.registerRule(require('./rules/variable_scope.coffee'));
 
 coffeelint.registerRule(require('./rules/non_empty_constructor_needs_parens.coffee'));
 
@@ -277,7 +283,6 @@ coffeelint.lint = function(source, userConfig, literate) {
         lineNumber: 1,
         context: "File was transformed from " + sourceLength + " lines to " + (source.split("\n").length) + " lines"
       }, config.transform_messes_up_line_numbers));
-      console.log(errors);
     }
   }
   if ((userConfig != null ? (ref3 = userConfig.coffeelint) != null ? ref3.coffeescript : void 0 : void 0) != null) {
@@ -380,7 +385,7 @@ coffeelint.setCache = function(obj) {
 
 
 
-},{"./../package.json":3,"./ast_linter.coffee":4,"./error_report.coffee":6,"./lexical_linter.coffee":7,"./line_linter.coffee":8,"./messages.coffee":9,"./rules.coffee":10,"./rules/arrow_spacing.coffee":11,"./rules/braces_spacing.coffee":12,"./rules/camel_case_classes.coffee":13,"./rules/colon_assignment_spacing.coffee":14,"./rules/cyclomatic_complexity.coffee":15,"./rules/duplicate_key.coffee":16,"./rules/empty_constructor_needs_parens.coffee":17,"./rules/ensure_comprehensions.coffee":18,"./rules/indentation.coffee":19,"./rules/line_endings.coffee":20,"./rules/max_line_length.coffee":21,"./rules/missing_fat_arrows.coffee":22,"./rules/newlines_after_classes.coffee":23,"./rules/no_backticks.coffee":24,"./rules/no_bitwise_operators.coffee":25,"./rules/no_debugger.coffee":26,"./rules/no_empty_functions.coffee":27,"./rules/no_empty_param_list.coffee":28,"./rules/no_implicit_braces.coffee":29,"./rules/no_implicit_parens.coffee":30,"./rules/no_interpolation_in_single_quotes.coffee":31,"./rules/no_plusplus.coffee":32,"./rules/no_stand_alone_at.coffee":33,"./rules/no_tabs.coffee":34,"./rules/no_throwing_strings.coffee":35,"./rules/no_trailing_semicolons.coffee":36,"./rules/no_trailing_whitespace.coffee":37,"./rules/no_unnecessary_double_quotes.coffee":38,"./rules/no_unnecessary_fat_arrows.coffee":39,"./rules/non_empty_constructor_needs_parens.coffee":40,"./rules/prefer_english_operator.coffee":41,"./rules/space_operators.coffee":42,"./rules/spacing_after_comma.coffee":43,"./rules/transform_messes_up_line_numbers.coffee":44,"lodash":2}],2:[function(require,module,exports){
+},{"./../package.json":3,"./ast_linter.coffee":4,"./error_report.coffee":6,"./lexical_linter.coffee":8,"./line_linter.coffee":9,"./messages.coffee":10,"./rules.coffee":11,"./rules/arrow_spacing.coffee":12,"./rules/braces_spacing.coffee":13,"./rules/camel_case_classes.coffee":14,"./rules/camel_case_vars.coffee":15,"./rules/colon_assignment_spacing.coffee":16,"./rules/cyclomatic_complexity.coffee":17,"./rules/duplicate_key.coffee":18,"./rules/empty_constructor_needs_parens.coffee":19,"./rules/ensure_comprehensions.coffee":20,"./rules/indentation.coffee":21,"./rules/line_endings.coffee":22,"./rules/max_line_length.coffee":23,"./rules/missing_fat_arrows.coffee":24,"./rules/newlines_after_classes.coffee":25,"./rules/no_backticks.coffee":26,"./rules/no_bitwise_operators.coffee":27,"./rules/no_debugger.coffee":28,"./rules/no_empty_functions.coffee":29,"./rules/no_empty_param_list.coffee":30,"./rules/no_implicit_braces.coffee":31,"./rules/no_implicit_parens.coffee":32,"./rules/no_interpolation_in_single_quotes.coffee":33,"./rules/no_plusplus.coffee":34,"./rules/no_stand_alone_at.coffee":35,"./rules/no_tabs.coffee":36,"./rules/no_throwing_strings.coffee":37,"./rules/no_trailing_semicolons.coffee":38,"./rules/no_trailing_whitespace.coffee":39,"./rules/no_unnecessary_double_quotes.coffee":40,"./rules/no_unnecessary_fat_arrows.coffee":41,"./rules/non_empty_constructor_needs_parens.coffee":42,"./rules/prefer_english_operator.coffee":43,"./rules/space_operators.coffee":44,"./rules/spacing_after_comma.coffee":45,"./rules/transform_messes_up_line_numbers.coffee":46,"./rules/undefined_variables.coffee":47,"./rules/variable_scope.coffee":48,"lodash":2}],2:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -12921,6 +12926,584 @@ module.exports = ErrorReport = (function() {
 
 
 },{}],7:[function(require,module,exports){
+exports.reservedVars = {
+  "arguments": false,
+  NaN: false
+};
+
+exports.ecmaIdentifiers = {
+  Array: false,
+  Boolean: false,
+  Date: false,
+  decodeURI: false,
+  decodeURIComponent: false,
+  encodeURI: false,
+  encodeURIComponent: false,
+  Error: false,
+  "eval": false,
+  EvalError: false,
+  Function: false,
+  hasOwnProperty: false,
+  isFinite: false,
+  isNaN: false,
+  JSON: false,
+  Math: false,
+  Map: false,
+  Number: false,
+  Object: false,
+  parseInt: false,
+  parseFloat: false,
+  RangeError: false,
+  ReferenceError: false,
+  RegExp: false,
+  Set: false,
+  String: false,
+  SyntaxError: false,
+  TypeError: false,
+  URIError: false,
+  WeakMap: false
+};
+
+exports.browser = {
+  Audio: false,
+  Blob: false,
+  addEventListener: false,
+  applicationCache: false,
+  atob: false,
+  blur: false,
+  btoa: false,
+  clearInterval: false,
+  clearTimeout: false,
+  close: false,
+  closed: false,
+  CustomEvent: false,
+  DOMParser: false,
+  defaultStatus: false,
+  document: false,
+  Element: false,
+  ElementTimeControl: false,
+  event: false,
+  FileReader: false,
+  FormData: false,
+  focus: false,
+  frames: false,
+  getComputedStyle: false,
+  HTMLElement: false,
+  HTMLAnchorElement: false,
+  HTMLBaseElement: false,
+  HTMLBlockquoteElement: false,
+  HTMLBodyElement: false,
+  HTMLBRElement: false,
+  HTMLButtonElement: false,
+  HTMLCanvasElement: false,
+  HTMLDirectoryElement: false,
+  HTMLDivElement: false,
+  HTMLDListElement: false,
+  HTMLFieldSetElement: false,
+  HTMLFontElement: false,
+  HTMLFormElement: false,
+  HTMLFrameElement: false,
+  HTMLFrameSetElement: false,
+  HTMLHeadElement: false,
+  HTMLHeadingElement: false,
+  HTMLHRElement: false,
+  HTMLHtmlElement: false,
+  HTMLIFrameElement: false,
+  HTMLImageElement: false,
+  HTMLInputElement: false,
+  HTMLIsIndexElement: false,
+  HTMLLabelElement: false,
+  HTMLLayerElement: false,
+  HTMLLegendElement: false,
+  HTMLLIElement: false,
+  HTMLLinkElement: false,
+  HTMLMapElement: false,
+  HTMLMenuElement: false,
+  HTMLMetaElement: false,
+  HTMLModElement: false,
+  HTMLObjectElement: false,
+  HTMLOListElement: false,
+  HTMLOptGroupElement: false,
+  HTMLOptionElement: false,
+  HTMLParagraphElement: false,
+  HTMLParamElement: false,
+  HTMLPreElement: false,
+  HTMLQuoteElement: false,
+  HTMLScriptElement: false,
+  HTMLSelectElement: false,
+  HTMLStyleElement: false,
+  HTMLTableCaptionElement: false,
+  HTMLTableCellElement: false,
+  HTMLTableColElement: false,
+  HTMLTableElement: false,
+  HTMLTableRowElement: false,
+  HTMLTableSectionElement: false,
+  HTMLTextAreaElement: false,
+  HTMLTitleElement: false,
+  HTMLUListElement: false,
+  HTMLVideoElement: false,
+  history: false,
+  Image: false,
+  length: false,
+  localStorage: false,
+  location: false,
+  MessageChannel: false,
+  MessageEvent: false,
+  MessagePort: false,
+  MouseEvent: false,
+  moveBy: false,
+  moveTo: false,
+  MutationObserver: false,
+  name: false,
+  Node: false,
+  NodeFilter: false,
+  navigator: false,
+  onbeforeunload: true,
+  onblur: true,
+  onerror: true,
+  onfocus: true,
+  onload: true,
+  onresize: true,
+  onunload: true,
+  open: false,
+  openDatabase: false,
+  opener: false,
+  Option: false,
+  parent: false,
+  print: false,
+  removeEventListener: false,
+  resizeBy: false,
+  resizeTo: false,
+  screen: false,
+  scroll: false,
+  scrollBy: false,
+  scrollTo: false,
+  sessionStorage: false,
+  setInterval: false,
+  setTimeout: false,
+  SharedWorker: false,
+  status: false,
+  SVGAElement: false,
+  SVGAltGlyphDefElement: false,
+  SVGAltGlyphElement: false,
+  SVGAltGlyphItemElement: false,
+  SVGAngle: false,
+  SVGAnimateColorElement: false,
+  SVGAnimateElement: false,
+  SVGAnimateMotionElement: false,
+  SVGAnimateTransformElement: false,
+  SVGAnimatedAngle: false,
+  SVGAnimatedBoolean: false,
+  SVGAnimatedEnumeration: false,
+  SVGAnimatedInteger: false,
+  SVGAnimatedLength: false,
+  SVGAnimatedLengthList: false,
+  SVGAnimatedNumber: false,
+  SVGAnimatedNumberList: false,
+  SVGAnimatedPathData: false,
+  SVGAnimatedPoints: false,
+  SVGAnimatedPreserveAspectRatio: false,
+  SVGAnimatedRect: false,
+  SVGAnimatedString: false,
+  SVGAnimatedTransformList: false,
+  SVGAnimationElement: false,
+  SVGCSSRule: false,
+  SVGCircleElement: false,
+  SVGClipPathElement: false,
+  SVGColor: false,
+  SVGColorProfileElement: false,
+  SVGColorProfileRule: false,
+  SVGComponentTransferFunctionElement: false,
+  SVGCursorElement: false,
+  SVGDefsElement: false,
+  SVGDescElement: false,
+  SVGDocument: false,
+  SVGElement: false,
+  SVGElementInstance: false,
+  SVGElementInstanceList: false,
+  SVGEllipseElement: false,
+  SVGExternalResourcesRequired: false,
+  SVGFEBlendElement: false,
+  SVGFEColorMatrixElement: false,
+  SVGFEComponentTransferElement: false,
+  SVGFECompositeElement: false,
+  SVGFEConvolveMatrixElement: false,
+  SVGFEDiffuseLightingElement: false,
+  SVGFEDisplacementMapElement: false,
+  SVGFEDistantLightElement: false,
+  SVGFEFloodElement: false,
+  SVGFEFuncAElement: false,
+  SVGFEFuncBElement: false,
+  SVGFEFuncGElement: false,
+  SVGFEFuncRElement: false,
+  SVGFEGaussianBlurElement: false,
+  SVGFEImageElement: false,
+  SVGFEMergeElement: false,
+  SVGFEMergeNodeElement: false,
+  SVGFEMorphologyElement: false,
+  SVGFEOffsetElement: false,
+  SVGFEPointLightElement: false,
+  SVGFESpecularLightingElement: false,
+  SVGFESpotLightElement: false,
+  SVGFETileElement: false,
+  SVGFETurbulenceElement: false,
+  SVGFilterElement: false,
+  SVGFilterPrimitiveStandardAttributes: false,
+  SVGFitToViewBox: false,
+  SVGFontElement: false,
+  SVGFontFaceElement: false,
+  SVGFontFaceFormatElement: false,
+  SVGFontFaceNameElement: false,
+  SVGFontFaceSrcElement: false,
+  SVGFontFaceUriElement: false,
+  SVGForeignObjectElement: false,
+  SVGGElement: false,
+  SVGGlyphElement: false,
+  SVGGlyphRefElement: false,
+  SVGGradientElement: false,
+  SVGHKernElement: false,
+  SVGICCColor: false,
+  SVGImageElement: false,
+  SVGLangSpace: false,
+  SVGLength: false,
+  SVGLengthList: false,
+  SVGLineElement: false,
+  SVGLinearGradientElement: false,
+  SVGLocatable: false,
+  SVGMPathElement: false,
+  SVGMarkerElement: false,
+  SVGMaskElement: false,
+  SVGMatrix: false,
+  SVGMetadataElement: false,
+  SVGMissingGlyphElement: false,
+  SVGNumber: false,
+  SVGNumberList: false,
+  SVGPaint: false,
+  SVGPathElement: false,
+  SVGPathSeg: false,
+  SVGPathSegArcAbs: false,
+  SVGPathSegArcRel: false,
+  SVGPathSegClosePath: false,
+  SVGPathSegCurvetoCubicAbs: false,
+  SVGPathSegCurvetoCubicRel: false,
+  SVGPathSegCurvetoCubicSmoothAbs: false,
+  SVGPathSegCurvetoCubicSmoothRel: false,
+  SVGPathSegCurvetoQuadraticAbs: false,
+  SVGPathSegCurvetoQuadraticRel: false,
+  SVGPathSegCurvetoQuadraticSmoothAbs: false,
+  SVGPathSegCurvetoQuadraticSmoothRel: false,
+  SVGPathSegLinetoAbs: false,
+  SVGPathSegLinetoHorizontalAbs: false,
+  SVGPathSegLinetoHorizontalRel: false,
+  SVGPathSegLinetoRel: false,
+  SVGPathSegLinetoVerticalAbs: false,
+  SVGPathSegLinetoVerticalRel: false,
+  SVGPathSegList: false,
+  SVGPathSegMovetoAbs: false,
+  SVGPathSegMovetoRel: false,
+  SVGPatternElement: false,
+  SVGPoint: false,
+  SVGPointList: false,
+  SVGPolygonElement: false,
+  SVGPolylineElement: false,
+  SVGPreserveAspectRatio: false,
+  SVGRadialGradientElement: false,
+  SVGRect: false,
+  SVGRectElement: false,
+  SVGRenderingIntent: false,
+  SVGSVGElement: false,
+  SVGScriptElement: false,
+  SVGSetElement: false,
+  SVGStopElement: false,
+  SVGStringList: false,
+  SVGStylable: false,
+  SVGStyleElement: false,
+  SVGSwitchElement: false,
+  SVGSymbolElement: false,
+  SVGTRefElement: false,
+  SVGTSpanElement: false,
+  SVGTests: false,
+  SVGTextContentElement: false,
+  SVGTextElement: false,
+  SVGTextPathElement: false,
+  SVGTextPositioningElement: false,
+  SVGTitleElement: false,
+  SVGTransform: false,
+  SVGTransformList: false,
+  SVGTransformable: false,
+  SVGURIReference: false,
+  SVGUnitTypes: false,
+  SVGUseElement: false,
+  SVGVKernElement: false,
+  SVGViewElement: false,
+  SVGViewSpec: false,
+  SVGZoomAndPan: false,
+  TimeEvent: false,
+  top: false,
+  WebSocket: false,
+  window: false,
+  Worker: false,
+  XMLHttpRequest: false,
+  XMLSerializer: false,
+  XPathEvaluator: false,
+  XPathException: false,
+  XPathExpression: false,
+  XPathNamespace: false,
+  XPathNSResolver: false,
+  XPathResult: false
+};
+
+exports.devel = {
+  alert: false,
+  confirm: false,
+  console: false,
+  Debug: false,
+  opera: false,
+  prompt: false
+};
+
+exports.worker = {
+  importScripts: true,
+  postMessage: true,
+  self: true
+};
+
+exports.nonstandard = {
+  escape: false,
+  unescape: false
+};
+
+exports.couch = {
+  "require": false,
+  respond: false,
+  getRow: false,
+  emit: false,
+  send: false,
+  start: false,
+  sum: false,
+  log: false,
+  exports: false,
+  module: false,
+  provides: false
+};
+
+exports.node = {
+  __filename: false,
+  __dirname: false,
+  Buffer: false,
+  console: false,
+  exports: true,
+  GLOBAL: false,
+  global: false,
+  module: false,
+  process: false,
+  require: false,
+  setTimeout: false,
+  clearTimeout: false,
+  setInterval: false,
+  clearInterval: false,
+  setImmediate: false,
+  clearImmediate: false
+};
+
+exports.phantom = {
+  phantom: true,
+  require: true,
+  WebPage: true,
+  console: true,
+  exports: true
+};
+
+exports.rhino = {
+  defineClass: false,
+  deserialize: false,
+  gc: false,
+  help: false,
+  importPackage: false,
+  "java": false,
+  load: false,
+  loadClass: false,
+  print: false,
+  quit: false,
+  readFile: false,
+  readUrl: false,
+  runCommand: false,
+  seal: false,
+  serialize: false,
+  spawn: false,
+  sync: false,
+  toint32: false,
+  version: false
+};
+
+exports.shelljs = {
+  target: false,
+  echo: false,
+  exit: false,
+  cd: false,
+  pwd: false,
+  ls: false,
+  find: false,
+  cp: false,
+  rm: false,
+  mv: false,
+  mkdir: false,
+  test: false,
+  cat: false,
+  sed: false,
+  grep: false,
+  which: false,
+  dirs: false,
+  pushd: false,
+  popd: false,
+  env: false,
+  exec: false,
+  chmod: false,
+  config: false,
+  error: false,
+  tempdir: false
+};
+
+exports.typed = {
+  ArrayBuffer: false,
+  ArrayBufferView: false,
+  DataView: false,
+  Float32Array: false,
+  Float64Array: false,
+  Int16Array: false,
+  Int32Array: false,
+  Int8Array: false,
+  Uint16Array: false,
+  Uint32Array: false,
+  Uint8Array: false,
+  Uint8ClampedArray: false
+};
+
+exports.wsh = {
+  ActiveXObject: true,
+  Enumerator: true,
+  GetObject: true,
+  ScriptEngine: true,
+  ScriptEngineBuildVersion: true,
+  ScriptEngineMajorVersion: true,
+  ScriptEngineMinorVersion: true,
+  VBArray: true,
+  WSH: true,
+  WScript: true,
+  XDomainRequest: true
+};
+
+exports.dojo = {
+  dojo: false,
+  dijit: false,
+  dojox: false,
+  define: false,
+  "require": false
+};
+
+exports.jquery = {
+  "$": false,
+  jQuery: false
+};
+
+exports.mootools = {
+  "$": false,
+  "$$": false,
+  Asset: false,
+  Browser: false,
+  Chain: false,
+  Class: false,
+  Color: false,
+  Cookie: false,
+  Core: false,
+  Document: false,
+  DomReady: false,
+  DOMEvent: false,
+  DOMReady: false,
+  Drag: false,
+  Element: false,
+  Elements: false,
+  Event: false,
+  Events: false,
+  Fx: false,
+  Group: false,
+  Hash: false,
+  HtmlTable: false,
+  Iframe: false,
+  IframeShim: false,
+  InputValidator: false,
+  instanceOf: false,
+  Keyboard: false,
+  Locale: false,
+  Mask: false,
+  MooTools: false,
+  Native: false,
+  Options: false,
+  OverText: false,
+  Request: false,
+  Scroller: false,
+  Slick: false,
+  Slider: false,
+  Sortables: false,
+  Spinner: false,
+  Swiff: false,
+  Tips: false,
+  Type: false,
+  typeOf: false,
+  URI: false,
+  Window: false
+};
+
+exports.prototypejs = {
+  "$": false,
+  "$$": false,
+  "$A": false,
+  "$F": false,
+  "$H": false,
+  "$R": false,
+  "$break": false,
+  "$continue": false,
+  "$w": false,
+  Abstract: false,
+  Ajax: false,
+  Class: false,
+  Enumerable: false,
+  Element: false,
+  Event: false,
+  Field: false,
+  Form: false,
+  Hash: false,
+  Insertion: false,
+  ObjectRange: false,
+  PeriodicalExecuter: false,
+  Position: false,
+  Prototype: false,
+  Selector: false,
+  Template: false,
+  Toggle: false,
+  Try: false,
+  Autocompleter: false,
+  Builder: false,
+  Control: false,
+  Draggable: false,
+  Draggables: false,
+  Droppables: false,
+  Effect: false,
+  Sortable: false,
+  SortableObserver: false,
+  Sound: false,
+  Scriptaculous: false
+};
+
+exports.yui = {
+  YUI: false,
+  Y: false,
+  YUI_config: false
+};
+
+
+
+},{}],8:[function(require,module,exports){
 var BaseLinter, LexicalLinter, TokenApi,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty,
@@ -13025,7 +13608,7 @@ module.exports = LexicalLinter = (function(superClass) {
 
 
 
-},{"./base_linter.coffee":5}],8:[function(require,module,exports){
+},{"./base_linter.coffee":5}],9:[function(require,module,exports){
 var BaseLinter, LineApi, LineLinter, configStatement,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -13209,7 +13792,7 @@ module.exports = LineLinter = (function(superClass) {
 
 
 
-},{"./base_linter.coffee":5}],9:[function(require,module,exports){
+},{"./base_linter.coffee":5}],10:[function(require,module,exports){
 module.exports = {
   'E001': 'Function arrows (-> and =>) must be spaced properly',
   'E002': 'Curly braces must have the proper spacing',
@@ -13244,12 +13827,15 @@ module.exports = {
   'E031': 'Don\'t use &&, ||, ==, !=, or !',
   'E032': 'Operators must be spaced properly',
   'E033': 'Spaces are required after commas',
-  'E034': 'Transforming source messes up line numbers'
+  'E034': 'Transforming source messes up line numbers',
+  'E035': 'Undefined variable',
+  'E036': 'Unused variable',
+  'E037': 'Variable and property names should be camelCased'
 };
 
 
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 var ERROR, IGNORE, WARN;
 
 ERROR = 'error';
@@ -13267,7 +13853,7 @@ module.exports = {
 
 
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var ArrowSpacing;
 
 module.exports = ArrowSpacing = (function() {
@@ -13313,7 +13899,7 @@ module.exports = ArrowSpacing = (function() {
 
 
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 var BracesSpacing;
 
 module.exports = BracesSpacing = (function() {
@@ -13392,7 +13978,7 @@ module.exports = BracesSpacing = (function() {
 
 
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var CamelCaseClasses, regexes;
 
 regexes = {
@@ -13440,7 +14026,53 @@ module.exports = CamelCaseClasses = (function() {
 
 
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
+var CamelCaseVars, regexes;
+
+regexes = {
+  camelCase: /^\$?\$?_?_?[a-zA-Z][a-zA-Z\d]*$/,
+  allCaps: /^[A-Z][_A-Z\d]*$/
+};
+
+module.exports = CamelCaseVars = (function() {
+  function CamelCaseVars() {}
+
+  CamelCaseVars.prototype.rule = {
+    name: 'camel_case_vars',
+    level: 'ignore',
+    message: 'E037',
+    description: "This rule mandates that all variable and property names are either\ncamelCased or ALL_CAPS.\n<pre>\n<code># Good!\nmyVar = 23\n# Good!\nMY_CONSTANT = 23\n# Bad!\nmy_var = 23\n</code>\n</pre>"
+  };
+
+  CamelCaseVars.prototype.tokens = ['IDENTIFIER'];
+
+  CamelCaseVars.prototype.lintToken = function(token, tokenApi) {
+    var offset, ref, ref1, varName;
+    varName = null;
+    offset = 0;
+    while (varName == null) {
+      if (((ref = tokenApi.peek(offset + 1)) != null ? ref[0] : void 0) === '.') {
+        offset += 2;
+      } else if (((ref1 = tokenApi.peek(offset)) != null ? ref1[0] : void 0) === '@') {
+        offset += 1;
+      } else {
+        varName = tokenApi.peek(offset)[1];
+      }
+    }
+    if (!regexes.camelCase.test(varName) && !regexes.allCaps.test(varName) && varName !== '_' && varName !== '$') {
+      return {
+        context: "var name: " + varName
+      };
+    }
+  };
+
+  return CamelCaseVars;
+
+})();
+
+
+
+},{}],16:[function(require,module,exports){
 var ColonAssignmentSpacing;
 
 module.exports = ColonAssignmentSpacing = (function() {
@@ -13495,7 +14127,7 @@ module.exports = ColonAssignmentSpacing = (function() {
 
 
 
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var CyclomaticComplexity;
 
 module.exports = CyclomaticComplexity = (function() {
@@ -13555,7 +14187,7 @@ module.exports = CyclomaticComplexity = (function() {
 
 
 
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var DuplicateKey;
 
 module.exports = DuplicateKey = (function() {
@@ -13625,7 +14257,7 @@ module.exports = DuplicateKey = (function() {
 
 
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var EmptyConstructorNeedsParens;
 
 module.exports = EmptyConstructorNeedsParens = (function() {
@@ -13673,7 +14305,7 @@ module.exports = EmptyConstructorNeedsParens = (function() {
 
 
 
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var EnsureComprehensions,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -13740,7 +14372,7 @@ module.exports = EnsureComprehensions = (function() {
 
 
 
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var Indentation;
 
 module.exports = Indentation = (function() {
@@ -13865,7 +14497,7 @@ module.exports = Indentation = (function() {
 
 
 
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var LineEndings;
 
 module.exports = LineEndings = (function() {
@@ -13910,7 +14542,7 @@ module.exports = LineEndings = (function() {
 
 
 
-},{}],21:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 var MaxLineLength, regexes;
 
 regexes = {
@@ -13956,7 +14588,7 @@ module.exports = MaxLineLength = (function() {
 
 
 
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var MissingFatArrows, any, containsButIsnt,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -14085,7 +14717,7 @@ module.exports = MissingFatArrows = (function() {
 
 
 
-},{}],23:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 var NewlinesAfterClasses;
 
 module.exports = NewlinesAfterClasses = (function() {
@@ -14121,7 +14753,7 @@ module.exports = NewlinesAfterClasses = (function() {
 
 
 
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 var NoBackticks;
 
 module.exports = NoBackticks = (function() {
@@ -14146,7 +14778,7 @@ module.exports = NoBackticks = (function() {
 
 
 
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var NoBitwiseOperators;
 
 module.exports = NoBitwiseOperators = (function() {
@@ -14179,7 +14811,7 @@ module.exports = NoBitwiseOperators = (function() {
 
 
 
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 var NoDebugger;
 
 module.exports = NoDebugger = (function() {
@@ -14206,7 +14838,7 @@ module.exports = NoDebugger = (function() {
 
 
 
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 var NoEmptyFunctions, isEmptyCode;
 
 isEmptyCode = function(node, astApi) {
@@ -14251,7 +14883,7 @@ module.exports = NoEmptyFunctions = (function() {
 
 
 
-},{}],28:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var NoEmptyParamList;
 
 module.exports = NoEmptyParamList = (function() {
@@ -14278,7 +14910,7 @@ module.exports = NoEmptyParamList = (function() {
 
 
 
-},{}],29:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 var NoImplicitBraces;
 
 module.exports = NoImplicitBraces = (function() {
@@ -14338,7 +14970,7 @@ module.exports = NoImplicitBraces = (function() {
 
 
 
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 var NoImplicitParens;
 
 module.exports = NoImplicitParens = (function() {
@@ -14381,7 +15013,7 @@ module.exports = NoImplicitParens = (function() {
 
 
 
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 var NoInterpolationInSingleQuotes;
 
 module.exports = NoInterpolationInSingleQuotes = (function() {
@@ -14409,7 +15041,7 @@ module.exports = NoInterpolationInSingleQuotes = (function() {
 
 
 
-},{}],32:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 var NoPlusPlus;
 
 module.exports = NoPlusPlus = (function() {
@@ -14436,7 +15068,7 @@ module.exports = NoPlusPlus = (function() {
 
 
 
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 var NoStandAloneAt;
 
 module.exports = NoStandAloneAt = (function() {
@@ -14473,7 +15105,7 @@ module.exports = NoStandAloneAt = (function() {
 
 
 
-},{}],34:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 var NoTabs, indentationRegex,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -14505,7 +15137,7 @@ module.exports = NoTabs = (function() {
 
 
 
-},{}],35:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 var NoThrowingStrings;
 
 module.exports = NoThrowingStrings = (function() {
@@ -14533,7 +15165,7 @@ module.exports = NoThrowingStrings = (function() {
 
 
 
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 var NoTrailingSemicolons, regexes,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   slice = [].slice;
@@ -14586,7 +15218,7 @@ module.exports = NoTrailingSemicolons = (function() {
 
 
 
-},{}],37:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 var NoTrailingWhitespace, regexes;
 
 regexes = {
@@ -14650,7 +15282,7 @@ module.exports = NoTrailingWhitespace = (function() {
 
 
 
-},{}],38:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 var NoUnnecessaryDoubleQuotes;
 
 module.exports = NoUnnecessaryDoubleQuotes = (function() {
@@ -14701,7 +15333,7 @@ module.exports = NoUnnecessaryDoubleQuotes = (function() {
 
 
 
-},{}],39:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 var NoUnnecessaryFatArrows, any,
   bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -14783,7 +15415,7 @@ module.exports = NoUnnecessaryFatArrows = (function() {
 
 
 
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 var NonEmptyConstructorNeedsParens, ParentClass,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
@@ -14816,7 +15448,7 @@ module.exports = NonEmptyConstructorNeedsParens = (function(superClass) {
 
 
 
-},{"./empty_constructor_needs_parens.coffee":17}],41:[function(require,module,exports){
+},{"./empty_constructor_needs_parens.coffee":19}],43:[function(require,module,exports){
 var RuleProcessor;
 
 module.exports = RuleProcessor = (function() {
@@ -14878,7 +15510,7 @@ module.exports = RuleProcessor = (function() {
 
 
 
-},{}],42:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 var SpaceOperators,
   indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
@@ -14983,7 +15615,7 @@ module.exports = SpaceOperators = (function() {
 
 
 
-},{}],43:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 var RuleProcessor;
 
 module.exports = RuleProcessor = (function() {
@@ -15012,7 +15644,7 @@ module.exports = RuleProcessor = (function() {
 
 
 
-},{}],44:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 var CamelCaseClasses;
 
 module.exports = CamelCaseClasses = (function() {
@@ -15030,6 +15662,618 @@ module.exports = CamelCaseClasses = (function() {
   CamelCaseClasses.prototype.lintToken = function(token, tokenApi) {};
 
   return CamelCaseClasses;
+
+})();
+
+
+
+},{}],47:[function(require,module,exports){
+var mandatoryEnvironments, vars,
+  bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+  hasProp = {}.hasOwnProperty;
+
+vars = require('../global_vars.coffee');
+
+mandatoryEnvironments = ['ecmaIdentifiers', 'reservedVars'];
+
+module.exports = (function() {
+  function _Class() {
+    this.lintNode = bind(this.lintNode, this);
+  }
+
+  _Class.prototype.rule = {
+    name: 'undef',
+    allowHoisting: false,
+    level: 'ignore',
+    message: 'E035',
+    description: 'Detect undefined variables',
+    environments: (function() {
+      var cfg, env, i, len;
+      cfg = {};
+      for (env in vars) {
+        cfg[env] = false;
+      }
+      for (i = 0, len = mandatoryEnvironments.length; i < len; i++) {
+        env = mandatoryEnvironments[i];
+        delete cfg[env];
+      }
+      return cfg;
+    })(),
+    globals: []
+  };
+
+  _Class.prototype.lintAST = function(node, astApi) {
+    this.astApi = astApi;
+    this.depth = 0;
+    this.scopes = [];
+    this.newScope();
+    this.setupVariables();
+    if (this.astApi.config[this.rule.name].allowHoisting) {
+      throw new Error("allowHoisting hasn't been implemented");
+    }
+    node.eachChild(this.lintNode);
+    this.popScope();
+    if (this.scopes.length !== 0) {
+      throw new Error("Error walking AST for undefined_variables");
+    }
+    return void 0;
+  };
+
+  _Class.prototype.setupVariables = function() {
+    var defineAll, env, i, j, len, len1, ref, ref1, results, ruleConfig, v, value;
+    ruleConfig = this.astApi.config[this.rule.name];
+    ref = ruleConfig.globals;
+    for (i = 0, len = ref.length; i < len; i++) {
+      v = ref[i];
+      this.currentScope[v] = {
+        defined: -1,
+        used: true
+      };
+    }
+    defineAll = (function(_this) {
+      return function(key) {
+        var results;
+        if (vars[key] == null) {
+          throw new Error("Invalid environment " + key);
+        }
+        results = [];
+        for (v in vars[key]) {
+          results.push(_this.currentScope[v] = {
+            defined: -1,
+            used: true
+          });
+        }
+        return results;
+      };
+    })(this);
+    vars.reservedVars["this"] = true;
+    for (j = 0, len1 = mandatoryEnvironments.length; j < len1; j++) {
+      env = mandatoryEnvironments[j];
+      defineAll(env);
+    }
+    if (ruleConfig.environments.shelljs) {
+      ruleConfig.environments.node = true;
+    }
+    if (ruleConfig.environments.node || ruleConfig.environments.browser) {
+      ruleConfig.environments.typed = true;
+    }
+    ref1 = ruleConfig.environments;
+    results = [];
+    for (env in ref1) {
+      value = ref1[env];
+      if (value) {
+        results.push(defineAll(env));
+      }
+    }
+    return results;
+  };
+
+  _Class.prototype.newScope = function() {
+    var Scope, cs, parentScope, ref;
+    parentScope = this.currentScope;
+    Scope = function() {};
+    if (parentScope != null) {
+      Scope.prototype = parentScope;
+    }
+    cs = new Scope;
+    this.scopes.push(cs);
+    this.currentScope = cs;
+    console.assert((ref = this.currentScope, indexOf.call(this.scopes, ref) >= 0), 'foo');
+    return void 0;
+  };
+
+  _Class.prototype.newVariable = function(variable, options) {
+    var base, index, name, p, ref, ref1;
+    if (options == null) {
+      options = {};
+    }
+    if (variable == null) {
+      return;
+    }
+    base = variable.base;
+    name = base.value;
+    if (((ref = variable.properties) != null ? ref.length : void 0) > 0) {
+      this.checkExists(variable.base);
+      ref1 = variable.properties;
+      for (index in ref1) {
+        p = ref1[index];
+        if (p.index != null) {
+          this.checkExists(p.index.base);
+        }
+      }
+      return;
+    }
+    if (name != null) {
+      if (this.currentScope[name] == null) {
+        options.defined = base.locationData.first_line + 1;
+        options.used = false;
+        return this.currentScope[name] = options;
+      }
+    }
+  };
+
+  _Class.prototype.popScope = function() {
+    var current, data, exitingScope, name;
+    exitingScope = this.scopes.pop();
+    this.currentScope = this.scopes[this.scopes.length - 1];
+    for (name in exitingScope) {
+      if (!hasProp.call(exitingScope, name)) continue;
+      data = exitingScope[name];
+      if (!data.used) {
+        current = data;
+        while ((current != null) && current.used === false) {
+          current = exitingScope[current.dependsOn];
+        }
+        if (!(current != null ? current.used : void 0)) {
+          this.errors.push(this.astApi.createError({
+            message: 'E036',
+            context: "Unused variable " + name,
+            lineNumber: data.defined
+          }));
+        }
+      }
+    }
+    return void 0;
+  };
+
+  _Class.prototype.checkExists = function(base) {
+    var value;
+    value = base != null ? base.value : void 0;
+    if ((base == null) || (base != null ? typeof base.isAssignable === "function" ? base.isAssignable() : void 0 : void 0) === false) {
+      return true;
+    }
+    if ((value != null) && (this.currentScope[value] != null)) {
+      this.currentScope[value].used = true;
+    } else if (value != null) {
+      this.errors.push(this.astApi.createError({
+        context: "Undefined variable " + value,
+        lineNumber: base.locationData.first_line + 1
+      }));
+      return false;
+    }
+    return true;
+  };
+
+  _Class.prototype.lintNode = function(node) {
+    var name, ref;
+    name = node.constructor.name;
+    switch (name) {
+      case 'Assign':
+        this.lintAssign(node);
+        break;
+      case 'Class':
+        this.newVariable(node.variable);
+        break;
+      case 'Code':
+        this.lintCode(node);
+        break;
+      case 'Comment':
+        this.lintComment(node);
+        break;
+      case 'Existence':
+        this.lintExistence(node);
+        break;
+      case 'For':
+        this.lintFor(node);
+        break;
+      case 'If':
+        this.lintIf(node);
+        break;
+      case 'In':
+        this.lintIn(node);
+        break;
+      case 'Op':
+        this.lintOp(node);
+        break;
+      case 'Splat':
+        this.checkExists(node.name.base);
+        break;
+      case 'Try':
+        this.lintTry(node);
+        break;
+      case 'Value':
+        this.lintValue(node);
+    }
+    this.lintChildren(node);
+    if (name === 'Return') {
+      if (node.expression != null) {
+        this.checkExists((ref = node.expression.variable) != null ? ref.base : void 0);
+        this.checkExists(node.expression);
+        this.checkExists(node.expressionbase);
+      }
+    } else if (name === 'Code') {
+      this.popScope();
+    }
+    return void 0;
+  };
+
+  _Class.prototype.lintValue = function(node) {
+    return this.checkExists(node.base);
+  };
+
+  _Class.prototype.lintAssign = function(arg1) {
+    var value, variable;
+    variable = arg1.variable, value = arg1.value;
+    if (variable.base.isAssignable() && variable.properties.length === 0) {
+      variable.constructor.name === 'Value';
+      this.newVariable(variable);
+    }
+    if (variable.isObject()) {
+      this.destructureObject(variable);
+    }
+    if (variable.isArray()) {
+      return this.destructureArray(variable);
+    }
+  };
+
+  _Class.prototype.destructure = function(node) {
+    if (node.base.constructor.name === 'Arr') {
+      return this.destructureArray(node);
+    } else {
+      return this.destructureObject(node);
+    }
+  };
+
+  _Class.prototype.destructureObject = function(node) {
+    if (node.base.isAssignable()) {
+      return this.newVariable(node);
+    }
+    return node.base.properties.forEach((function(_this) {
+      return function(p) {
+        if (p.isAssignable()) {
+          return _this.newVariable(p);
+        } else if (p.constructor.name === 'Assign') {
+          return _this.destructure(p.value);
+        }
+      };
+    })(this));
+  };
+
+  _Class.prototype.destructureArray = function(node) {
+    return node.base.objects.forEach((function(_this) {
+      return function(o) {
+        if (o.isAssignable()) {
+          if (o.constructor.name === 'Splat') {
+            return _this.newVariable(o.name);
+          } else {
+            return _this.newVariable(o);
+          }
+        } else if (o.constructor.name === 'Expansion') {
+          return void 0;
+        } else {
+          return _this.destructure(o);
+        }
+      };
+    })(this));
+  };
+
+  _Class.prototype.lintTry = function(node) {
+    var ref;
+    if (((ref = node.errorVariable) != null ? ref.value : void 0) != null) {
+      return this.newVariable({
+        base: {
+          value: node.errorVariable.value,
+          locationData: node.locationData
+        }
+      });
+    }
+  };
+
+  _Class.prototype.lintBlock = function(node) {
+    var exp, i, len, ref, results;
+    ref = node.expressions;
+    results = [];
+    for (i = 0, len = ref.length; i < len; i++) {
+      exp = ref[i];
+      if ((exp.variable != null) && (exp.value != null)) {
+        results.push(void 0);
+      } else if (exp.source != null) {
+        results.push(this.newVariable(exp.source));
+      } else {
+        results.push(void 0);
+      }
+    }
+    return results;
+  };
+
+  _Class.prototype.lintCall = function(node) {
+    var arg, i, len, ref, results;
+    if (node.variable != null) {
+      this.checkExists(node.variable.base);
+    }
+    ref = node.args;
+    results = [];
+    for (i = 0, len = ref.length; i < len; i++) {
+      arg = ref[i];
+      results.push(this.checkExists(arg.base));
+    }
+    return results;
+  };
+
+  _Class.prototype.lintCode = function(node) {
+    var i, lastParam, param, ref, results;
+    this.newScope();
+    lastParam = void 0;
+    ref = node.params;
+    results = [];
+    for (i = ref.length - 1; i >= 0; i += -1) {
+      param = ref[i];
+      param.base = param.name;
+      if (param.isComplex()) {
+        results.push(this.destructure(param));
+      } else {
+        this.newVariable(param, {
+          dependsOn: lastParam
+        });
+        results.push(lastParam = param.name.value);
+      }
+    }
+    return results;
+  };
+
+  _Class.prototype.lintComment = function(node) {
+    var commentRegex, i, len, line, ref, results, tmp, variable;
+    commentRegex = /global(?:\s[^\s]+)*/g;
+    line = node.locationData.first_line + 1;
+    tmp = commentRegex.exec(node.comment);
+    if (tmp == null) {
+      return;
+    }
+    ref = tmp[0].split(' ').slice(1);
+    results = [];
+    for (i = 0, len = ref.length; i < len; i++) {
+      variable = ref[i];
+      results.push(this.currentScope[variable] = {
+        defined: line,
+        used: false
+      });
+    }
+    return results;
+  };
+
+  _Class.prototype.lintFor = function(node) {
+    var ref;
+    if (node.name != null) {
+      this.newVariable({
+        base: node.name
+      });
+    }
+    if (node.index != null) {
+      this.newVariable({
+        base: node.index
+      }, {
+        dependsOn: (ref = node.name) != null ? ref.value : void 0
+      });
+    }
+    return this.checkExists(node.source.base);
+  };
+
+  _Class.prototype.lintExistence = function(node) {
+    if (node.expression.constructor.name === 'Value') {
+      return this.checkExists(node.expression.base);
+    }
+  };
+
+  _Class.prototype.lintIf = function(node) {
+    if (node.condition.expression != null) {
+      this.checkExists(node.condition.expression.base);
+    }
+    if (node.condition.constructor.name === 'Value') {
+      return this.checkExists(node.condition.base);
+    }
+  };
+
+  _Class.prototype.lintIn = function(node) {
+    this.checkExists(node.object.base);
+    return this.checkExists(node.array.base);
+  };
+
+  _Class.prototype.lintOp = function(node) {
+    this.checkExists(node.first.base);
+    if (node.second != null) {
+      return this.checkExists(node.second.base);
+    }
+  };
+
+  _Class.prototype.level = 0;
+
+  _Class.prototype.lintChildren = function(node) {
+    this.level++;
+    node.eachChild((function(_this) {
+      return function(childNode) {
+        if (childNode) {
+          _this.lintNode(childNode);
+        }
+        return true;
+      };
+    })(this));
+    return this.level--;
+  };
+
+  return _Class;
+
+})();
+
+
+
+},{"../global_vars.coffee":7}],48:[function(require,module,exports){
+
+/*
+
+The MIT License (MIT)
+
+Copyright (c) 2013 Pawel Maciejewski
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+    this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+var VariableScopeRule;
+
+module.exports = VariableScopeRule = (function() {
+  function VariableScopeRule() {}
+
+  VariableScopeRule.prototype.rule = {
+    name: 'variable_scope',
+    level: 'warn',
+    message: 'Outer scope variable overwrite',
+    description: 'To never overwrite outer scope variable by accident',
+    scopeDiff: 1
+  };
+
+  VariableScopeRule.prototype.lintAST = function(node, astApi) {
+    var config, error, errors, i, len;
+    config = astApi.config[this.rule.name];
+    errors = this.lintNode(node, {}, this.scopeDiffFilter(config.scopeDiff));
+    for (i = 0, len = errors.length; i < len; i++) {
+      error = errors[i];
+      this.errors.push(astApi.createError({
+        context: error.variable,
+        lineNumber: error.upper.locationData.first_line + 1,
+        lineNumberEnd: error.lower.locationData.first_line + 1
+      }));
+    }
+    return false;
+  };
+
+  VariableScopeRule.prototype.scopeDiffFilter = function(diff) {
+    return function(lower, upper) {
+      return lower.scope_level - upper.scope_level >= diff;
+    };
+  };
+
+  VariableScopeRule.prototype.lintNode = function(node, upperAssigns, filter, level) {
+    var assign, assignArr, assigns, code, codes, errors, i, j, len, len1, name, upper;
+    if (level == null) {
+      level = 1;
+    }
+    filter = filter || function() {
+      return true;
+    };
+    errors = [];
+    codes = this.nodeCodes(node);
+    assigns = this.nodeAssigns(node);
+    for (name in assigns) {
+      assignArr = assigns[name];
+      for (i = 0, len = assignArr.length; i < len; i++) {
+        assign = assignArr[i];
+        assign.scope_level = level;
+      }
+    }
+    for (name in upperAssigns) {
+      upper = upperAssigns[name];
+      if (name in assigns && filter(assigns[name][0], upper)) {
+        errors.push({
+          variable: name,
+          upper: upper,
+          lower: assigns[name][0]
+        });
+      } else {
+        assigns[name] = upper;
+      }
+    }
+    for (name in assigns) {
+      assignArr = assigns[name];
+      if (Array.isArray(assignArr)) {
+        assigns[name] = assignArr[assignArr.length - 1];
+      }
+    }
+    for (j = 0, len1 = codes.length; j < len1; j++) {
+      code = codes[j];
+      errors = errors.concat(this.lintNode(code.body, assigns, filter, level + 1));
+    }
+    return errors;
+  };
+
+  VariableScopeRule.prototype.nodeCodes = function(node) {
+    var codes;
+    codes = [];
+    node.traverseChildren(false, function(child) {
+      if (child.constructor.name === 'Code') {
+        return codes.push(child);
+      }
+    });
+    return codes;
+  };
+
+  VariableScopeRule.prototype.nodeAssigns = function(node) {
+    var assigns, ignoreNext;
+    assigns = {};
+    ignoreNext = false;
+    node.traverseChildren(false, function(child) {
+      var base, i, len, name, results, v, variables;
+      switch (child.constructor.name) {
+        case 'Assign':
+          if (child.variable.properties.length) {
+            return;
+          }
+          if (child.context === 'object') {
+            return;
+          }
+          if (ignoreNext) {
+            return ignoreNext = false;
+          }
+          variables = !!child.variable.base.objects ? child.variable.base.objects : [child.variable];
+          results = [];
+          for (i = 0, len = variables.length; i < len; i++) {
+            v = variables[i];
+            base = v.name ? v.name.base : v.value ? v.value.base : v.base;
+            if (base) {
+              name = base.value;
+              if (!assigns[name]) {
+                assigns[name] = [];
+              }
+              results.push(assigns[name].push(child));
+            } else {
+              results.push(void 0);
+            }
+          }
+          return results;
+          break;
+        case 'Comment':
+          if (child.comment.match(/coffeelint-variable-scope-ignore/)) {
+            return ignoreNext = true;
+          }
+      }
+    });
+    return assigns;
+  };
+
+  return VariableScopeRule;
 
 })();
 

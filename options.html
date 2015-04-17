@@ -153,6 +153,23 @@ This rule is enabled by default.
 </td>
 </tr>
 <tr>
+<td class="rule">camel_case_vars</td>
+<td class="description">
+    This rule mandates that all variable and property names are either
+camelCased or ALL_CAPS.
+<pre>
+<code># Good!
+myVar = 23
+# Good!
+MY_CONSTANT = 23
+# Bad!
+my_var = 23
+</code>
+</pre>
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
 <td class="rule">coffeescript_error</td>
 <td class="description">
     [no description provided]
@@ -549,9 +566,33 @@ and warns that line numbers are probably incorrect.
     <p><em>default level: warn</em></p>
 </td>
 </tr>
+<tr>
+<td class="rule">undef</td>
+<td class="description">
+    Detect undefined variables
+    <p><em>default level: ignore</em></p>
+</td>
+</tr>
+<tr>
+<td class="rule">variable_scope</td>
+<td class="description">
+    To never overwrite outer scope variable by accident
+    <p><em>default level: warn</em></p>
+</td>
+</tr>
           </tbody>
         </table>
     </div>    </div>
+
+    <link href='/SyntaxHighlighter/css/main.css' rel='stylesheet' type='text/css'>
+    <link href='css/syntax/shCore.css' rel='stylesheet' type='text/css'>
+    <link href='css/syntax/shThemeDefault.css' rel='stylesheet' type='text/css'>
+    <script src='js/syntax/shCore.js' type='text/javascript'></script>
+    <script src='js/syntax/shAutoloader.js' type='text/javascript'></script>
+    <script src='js/syntax/shBrushXml.js' type='text/javascript'></script>
+    <script src='js/syntax/shBrushJScript.js' type='text/javascript'></script>
+    <script src='js/syntax/shBrushCss.js' type='text/javascript'></script>
+    <script src='js/syntax/main.js' type='text/javascript'></script>
 
     <script type="text/javascript" src="js/vendor/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="js/vendor/coffee-script.js"></script>
