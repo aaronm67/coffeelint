@@ -33,4 +33,6 @@ module.exports = {
     'E032': 'Operators must be spaced properly'
     'E033': 'Spaces are required after commas'
     'E034': 'Transforming source messes up line numbers'
+    'E035': 'Undefined variable'
+    'E036': 'Unused variable'
 }
