@@ -144,6 +144,7 @@ coffeelint.registerRule require './rules/line_endings.coffee'
 coffeelint.registerRule require './rules/no_trailing_semicolons.coffee'
 coffeelint.registerRule require './rules/indentation.coffee'
 coffeelint.registerRule require './rules/camel_case_classes.coffee'
+coffeelint.registerRule require './rules/camel_case_vars.coffee'
 coffeelint.registerRule require './rules/colon_assignment_spacing.coffee'
 coffeelint.registerRule require './rules/no_implicit_braces.coffee'
 coffeelint.registerRule require './rules/no_plusplus.coffee'
@@ -237,7 +238,6 @@ coffeelint.lint = (source, userConfig = {}, literate = false) ->
                 },
                 config.transform_messes_up_line_numbers
             ))
-            console.log errors
 
     if userConfig?.coffeelint?.coffeescript?
         CoffeeScript = ruleLoader.require userConfig.coffeelint.coffeescript

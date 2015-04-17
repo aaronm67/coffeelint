@@ -35,4 +35,5 @@ module.exports = {
     'E034': 'Transforming source messes up line numbers'
     'E035': 'Undefined variable'
     'E036': 'Unused variable'
+    'E037': 'Variable and property names should be camelCased'
 }
